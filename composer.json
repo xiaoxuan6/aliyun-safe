@@ -1,0 +1,19 @@
+{
+    "name": "james.xue/ali-green-api",
+    "license": "MIT",
+    "homepage": "https://github.com/xiaoxuan6/aliyun-safe.git",
+    "description": "the ali-green-api of checking content [阿里内容检测服务封装，包括垃圾文本、关键词文本检测以及对图片涉黄、暴恐、敏感检测]",
+    "authors": [
+        {
+            "name": "james.xue",
+            "email": "1527736751@qq.com",
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "autoload": {
+        "psr-4": {"AliGreenAPI\\aliyuncs\\": ""}
+    }
+}
