@@ -1,5 +1,5 @@
 {
-    "name": "james.xue/ali-green-api",
+    "name": "james.xue/ali-safe-api",
     "license": "MIT",
     "homepage": "https://github.com/xiaoxuan6/aliyun-safe.git",
     "description": "the ali-green-api of checking content [阿里内容检测服务封装，包括垃圾文本、关键词文本检测以及对图片涉黄、暴恐、敏感检测]",
