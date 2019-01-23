@@ -2,7 +2,7 @@
     "name": "james.xue/ali-green",
     "license": "MIT",
     "homepage": "https://github.com/xiaoxuan6/aliyun-safe.git",
-    "description": "the ali-green of checking content [阿里内容检测服务封装，包括垃圾文本、关键词文本检测以及对图片涉黄、暴恐、敏感检测]",
+    "description": "阿里内容检测，包括文本、关键词文本检测以及对图片涉黄、暴恐、敏感检测、广告、二维码等",
     "authors": [
         {
             "name": "james.xue",
