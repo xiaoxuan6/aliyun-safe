@@ -16,28 +16,28 @@
 
     前提：配置config/aliyun.php
 
- use James\AliGreen\AliGreen;
+    use James\AliGreen\AliGreen;
  
- $ali = AliGreen::getInstance();
+    $ali = AliGreen::getInstance();
  
- ------------字符串---------------
+   ------------字符串---------------
  
- $ali->checkText("约炮");
+    $ali->checkText("约炮");
  
- $ali->checkImg("http://nos.netease.com/yidun/2-0-0-4f903f968e6849d3930ef0f50af74fc2.jpg");
+    $ali->checkImg("http://nos.netease.com/yidun/2-0-0-4f903f968e6849d3930ef0f50af74fc2.jpg");
  
  
   ------------数组---------------
   
-  文本检测
+   文本检测
   
-  $textArr = array("测试", "约炮");
+    $textArr = array("测试", "约炮");
   
-  $ali->checkText($textArr);
+    $ali->checkText($textArr);
   
   图片检测
   
-  $imgArr = array("http://nos.netease.com/yidun/2-0-0-4f903f968e6849d3930ef0f50af74fc2.jpg", "http://blog.jstm365.com/images/page_bg.jpg");
+    $imgArr = array("http://nos.netease.com/yidun/2-0-0-4f903f968e6849d3930ef0f50af74fc2.jpg", "http://blog.jstm365.com/images/page_bg.jpg");
   
-  $result = $ali->checkImg($imgArr);
+    $result = $ali->checkImg($imgArr);
  
