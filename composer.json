@@ -19,7 +19,10 @@
         "laravel": {
             "providers": [
                 "James\\AliGreen\\AliGreenServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "AliGreen" : "James\\AliGreen\\Facades\\AliGreen"
+            }
         }
     }
 }
