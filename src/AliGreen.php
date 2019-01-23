@@ -71,12 +71,12 @@ class AliGreen
             $arr = $this->processSceneResult($taskResults, $title, $type);
             
             if(!$arr){
-                return $this->echoStr(-100,[
+                return $this->echoStr(200,[
                     'rate' => 100,
                     'describe' => '正常'
                 ]);
             }else
-                return $this->echoStr(200, $arr);
+                return $this->echoStr(-100, $arr);
         }else{
             return $this->echoStr(-200, '请重试！');
         }
