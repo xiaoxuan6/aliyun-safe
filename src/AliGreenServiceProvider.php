@@ -14,8 +14,8 @@ class AliGreenServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/config/aliyun.php' => config_path('aliyun.php'), // 发布配置文件到 laravel 的config 下
-        ]);
+            __DIR__ . '/config/aliyun.php' => config_path('aliyun.php') // 发布配置文件到 laravel 的config 下
+        ], 'config');
     }
 
     /**

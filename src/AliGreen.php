@@ -19,8 +19,8 @@ class AliGreen
     public static function getClient(){
         date_default_timezone_set("PRC");
 
-        $iClientProfile = \DefaultProfile::getProfile("cn-shanghai", config('aliyun.accessKeyId'), config('aliyun.accessKeySecret'));
-        \DefaultProfile::addEndpoint("cn-shanghai", "cn-shanghai", "Green", "green.cn-shanghai.aliyuncs.com");
+        $iClientProfile = \DefaultProfile::getProfile(config('aliyun.region'), config('aliyun.accessKeyId'), config('aliyun.accessKeySecret'));
+        \DefaultProfile::addEndpoint(config('aliyun.region'), config('aliyun.region'), "Green", "green.".config('aliyun.region').".aliyuncs.com");
         $client = new \DefaultAcsClient($iClientProfile);
 
         return $client;

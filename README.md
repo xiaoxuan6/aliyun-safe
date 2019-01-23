@@ -10,7 +10,7 @@
     
    2、发布config
    
-    php artisan vendor:publish --provider=James\AliGreen\AliGreenServiceProvider
+    php artisan vendor:publish --tag=config
     
 ### 使用方法：
 
