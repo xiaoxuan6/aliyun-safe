@@ -4,9 +4,17 @@
 
 阿里内容检测服务封装，包括垃圾文本、关键词文本检测以及对图片涉黄、暴恐、敏感检测
 ### 安装：
-    1、composer require james.xue/ali-safe-api
-    2、php artisan vendor:publish --provider=James\AliGreen\AliGreenServiceProvider
+   1、引入包
+   
+    composer require james.xue/ali-safe-api
+    
+   2、发布config
+   
+    php artisan vendor:publish --provider=James\AliGreen\AliGreenServiceProvider
+    
 ### 使用方法：
+
+    前提：配置config/aliyun.php
 
  use James\AliGreen\AliGreen;
  
