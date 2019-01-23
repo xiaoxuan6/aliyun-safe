@@ -17,7 +17,9 @@ class AliServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([__DIR__.'/config/aliyun.php' => config_path("aliyun.php")], 'aliyun');
+        $this->publishes([
+            __DIR__.'/config/aliyun.php' => config_path("aliyun.php"),
+        ]);
     }
 
 }
