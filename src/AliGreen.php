@@ -1,24 +1,12 @@
 <?php
-/**
- * AliGreenAPI
- * User: kewin.cheng
- * Date: 2017/11/16
- * Time: 13:39
- */
 
-namespace aliyuncs;
-
-use Green;
-
+namespace James\AliGreen;
+use James\AliGreen\Green;
 include_once 'aliyun-php-sdk-core/Config.php';
 
-class AliGreenAPI{
-
+class AliGreen
+{
     private static $_instance;
-
-    private function __construct(){
-
-    }
 
     private function __clone(){
         trigger_error("clone is not allowed", E_USER_ERROR);
@@ -65,33 +53,26 @@ class AliGreenAPI{
      *  20000  检测出异常 重试三次
      * @param $request
      */
-    private function processResponse($request){
+    private function processResponse($request, $title, $type){
 
         $client = $this->getClient();
 
-        try {
-            $response = $client->getAcsResponse($request);
+         $response = $client->getAcsResponse($request);
 
-            if(200 == $response->code){
+        if(200 == $response->code){
+            if(is_array($title))
                 $taskResults = $response->data;
-                $flag = true;
-                foreach ($taskResults as $taskResult) {
-                    if(200 == $taskResult->code){
-                        $this->processSceneResult($taskResult, $flag);
-                    }else{
-                        return $this->echoStr(-2000, 'task process fail:'.$response->code);
-                    }
-                }
-                if($flag == false){
-                    return $this->echoStr(-10000, 'the scene is not normal');
-                }else{
-                    return $this->echoStr(10000, 'the scene is normal');
-                }
-            }else{
-                return $this->echoStr(-2000, 'detect not success. code:'.$response->code);
-            }
-        } catch (Exception $e) {
-            return $this->echoStr(-2000, $e);
+            else
+                $taskResults = current($response->data)->results;
+
+            if(!$taskResults)
+                return $this->echoStr(-200, '请重试！');
+
+            $arr = $this->processSceneResult($taskResults, $title, $type);
+
+            return $this->echoStr(200, $arr);
+        }else{
+            return $this->echoStr(-200, '请重试！');
         }
     }
 
@@ -109,17 +90,52 @@ class AliGreenAPI{
     /**
      * @param $taskResult
      */
-    private function processSceneResult($taskResult, &$flag){
-        $sceneResults = $taskResult->results;
-
-        foreach ($sceneResults as $sceneResult) {
-            //根据scene和suggetion做相关的处理
-            $suggestion = $sceneResult->suggestion;
-            $rate = $sceneResult->rate;
-            if($suggestion!='pass' && $rate>80){
-                $flag = false;
+    private function processSceneResult($taskResults, $title, $type){
+        $arr = [];
+        foreach ($taskResults as $value){
+            if(is_array($title)){
+                if($type == 'image'){
+                    foreach ($value->results as $v){
+                        if(in_array($v->suggestion, ['review', 'block'])){
+                            $arr = [
+                                'label' => $v->label,
+                                'rate' => $v->rate,
+                                'describe' => $v->suggestion == 'review' ? '疑似' : ($v->suggestion == 'block' ? '违规' : '正常' ),
+                            ];
+                        }
+                        continue;
+                    }
+                }else{
+                    $suggestion = current($value->results)->suggestion;
+                    $value = current($value->results);
+                    if(in_array($suggestion, ['review', 'block'])){
+                        $arr = [
+                            'label' => $value->label,
+                            'rate' => $value->rate,
+                            'describe' => $value->suggestion == 'review' ? '疑似' : ($value->suggestion == 'block' ? '违规' : '正常' ),
+                        ];
+                    }
+                    continue;
+                }
+            }else{
+                if(in_array($value->suggestion, ['review', 'block'])){
+                    $arr = [
+                        'label' => $value->label,
+                        'rate' => $value->rate,
+                        'describe' => $value->suggestion == 'review' ? '疑似' : ($value->suggestion == 'block' ? '违规' : '正常' ),
+                    ];
+                }
+                continue;
             }
         }
+        if(!$arr){
+            $arr = [
+                'rate' => $value->rate,
+                'describe' => '正常'
+            ];
+        }
+
+        return $arr;
 
     }
 
@@ -140,6 +156,7 @@ class AliGreenAPI{
      * @return null
      */
     public function checkText($text){
+
 
         if(empty($text)){
             return null;
@@ -172,7 +189,7 @@ class AliGreenAPI{
                 "scenes" => array("antispam"))));
         }
 
-        $this->processResponse($request);
+        return $this->processResponse($request, $text, 'text');
     }
 
     /**
@@ -193,7 +210,7 @@ class AliGreenAPI{
     public function checkImg($img){
 
         if(empty($img)){
-            return null213456;
+            return null;
         }
 
         $request = new Green\ImageSyncScanRequest();
@@ -223,7 +240,7 @@ class AliGreenAPI{
                 "scenes" => config('aliyun.scenes'))));
         }
 
-        return $this->processResponse($request);
+        return $this->processResponse($request, $img, 'image');
     }
 
 }

@@ -17,14 +17,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-namespace Green;
+namespace James\AliGreen\Green;
 
-class ImageAsyncScanRequest extends \RoaAcsRequest
+class ImageAsyncScanResultsRequest extends \RoaAcsRequest
 {
 	function  __construct()
 	{
-		parent::__construct("Green", "2017-01-12", "ImageAsyncScan");
-		$this->setUriPattern("/green/image/asyncscan");
+		parent::__construct("Green", "2017-01-12", "ImageAsyncScanResults");
+		$this->setUriPattern("/green/image/results");
 		$this->setMethod("POST");
 	}
 
