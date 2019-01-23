@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-namespace Green\Request\V20170112;
+namespace Green;
 
 class VideoAsyncScanResultsRequest extends \RoaAcsRequest
 {
