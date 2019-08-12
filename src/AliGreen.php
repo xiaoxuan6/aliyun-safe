@@ -16,7 +16,8 @@ class AliGreen
      * Get the acs client
      * @return \DefaultAcsClient
      */
-    public static function getClient(){
+    public static function getClient()
+    {
         date_default_timezone_set("PRC");
 
         $iClientProfile = \DefaultProfile::getProfile(config('aliyun.region'), config('aliyun.accessKeyId'), config('aliyun.accessKeySecret'));
@@ -30,8 +31,8 @@ class AliGreen
      * create the singleton
      * @return AliGreenAPI
      */
-    public static function getInstance(){
-
+    public static function getInstance()
+    {
         if(empty( self::$_instance)){
             $class = get_called_class();
             self::$_instance  = new $class();
@@ -48,95 +49,93 @@ class AliGreen
      * rate 浮点数，结果为该分类的概率；值越高，越趋于该分类；取值为[0.00-100.00]
      * extras map，可选，附加信息. 该值将来可能会调整，建议不要在业务上进行依赖
      *
-     *  -10000  检测数据有问题
-     *  10000  检测数据正常
-     *  20000  检测出异常 重试三次
      * @param $request
      */
-    private function processResponse($request, $title, $type){
-
+    private function processResponse($request, $title, $type)
+    {
         $client = $this->getClient();
-
-         $response = $client->getAcsResponse($request);
+        $response = $client->getAcsResponse($request);
 
         if(200 == $response->code){
-            if(is_array($title))
-                $taskResults = $response->data;
-            else
-                $taskResults = current($response->data)->results;
-
-            if(!$taskResults)
-                return $this->echoStr(-200, '请重试！');
+            if(!$taskResults = $response->data)
+                return $this->response(-200, '请重试！');
 
             $arr = $this->processSceneResult($taskResults, $title, $type);
-            
+
             if(!$arr){
-                return $this->echoStr(200,[
+                return $this->response(200,[
                     'rate' => 100,
                     'describe' => '正常'
                 ]);
-            }else
-                return $this->echoStr(-100, $arr);
+            }else{
+                return $this->response(-100, $arr);
+            }
+
         }else{
-            return $this->echoStr(-200, '请重试！');
+            return $this->response(-200, '请重试！');
         }
     }
 
-    /**
-     * @param $code
-     * @param $msg
-     */
-    private function echoStr($code, $msg){
-        return array(
-            'code' => $code,
-            'msg' => $msg,
-        );
-    }
+
 
     /**
      * @param $taskResult
      */
-    private function processSceneResult($taskResults, $title, $type){
+    private function processSceneResult($taskResults, $title, $type)
+    {
         $arr = [];
         foreach ($taskResults as $value){
-            if(is_array($title)){
-                if($type == 'image'){
-                    foreach ($value->results as $v){
-                        if(in_array($v->suggestion, ['review', 'block'])){
-                            $arr = [
-                                'label' => $v->label,
-                                'rate' => $v->rate,
-                                'describe' => $v->suggestion == 'review' ? '疑似' : ($v->suggestion == 'block' ? '违规' : '正常' ),
-                            ];
-                        }
-                        continue;
-                    }
-                }else{
-                    $suggestion = current($value->results)->suggestion;
-                    $value = current($value->results);
-                    if(in_array($suggestion, ['review', 'block'])){
-                        $arr = [
-                            'label' => $value->label,
-                            'rate' => $value->rate,
-                            'describe' => $value->suggestion == 'review' ? '疑似' : ($value->suggestion == 'block' ? '违规' : '正常' ),
-                        ];
-                    }
-                    continue;
-                }
-            }else{
-                if(in_array($value->suggestion, ['review', 'block'])){
-                    $arr = [
-                        'label' => $value->label,
-                        'rate' => $value->rate,
-                        'describe' => $value->suggestion == 'review' ? '疑似' : ($value->suggestion == 'block' ? '违规' : '正常' ),
-                    ];
-                }
-                continue;
+            foreach ($value->results as $v){
+                $arr[] = $this->review($v->suggestion, $v->label, $v->rate, $v->scene);
             }
         }
 
-        return $arr;
+        // 处理自定文字
+        if(!array_filter($arr) && config('aliyun.content') && $type == 'text')
+        {
+            if(!is_array($title))
+                $title = [$title];
 
+            foreach ($title as $v) {
+                $arr[] = $this->reviewText($v);
+            }
+        }
+
+        return current(array_filter($arr));
+
+    }
+
+    /**
+     * Notes: 格式化数据
+     * Date: 2019/8/12 17:40
+     * @param $suggestion
+     * @param $label
+     * @param $rate
+     * @return array
+     */
+    private function review($suggestion, $label, $rate, $scene)
+    {
+        $arr = [];
+        if(in_array($suggestion, ['review', 'block'])){
+            $arr = [
+                'label' => $label,
+                'rate' => $rate,
+                'scene' => $scene,
+                'describe' => $suggestion == 'review' ? '疑似' : '违规',
+            ];
+        }
+        return $arr;
+    }
+
+    /**
+     * Notes: 检测是否包含自定义文字
+     * Date: 2019/8/12 17:45
+     * @param $title
+     * @return array
+     */
+    private function reviewText($title)
+    {
+        return in_array($title, config('aliyun.content')) ? [ 'rate' => 100, 'describe' => '违规'] : [];
     }
 
     /**
@@ -155,9 +154,8 @@ class AliGreen
      * @param $text 支持字符串和数组
      * @return null
      */
-    public function checkText($text){
-
-
+    public function checkText($text)
+    {
         if(empty($text)){
             return null;
         }
@@ -166,8 +164,8 @@ class AliGreen
         $request->setMethod("POST");
         $request->setAcceptFormat("JSON");
 
-        if(is_array($text)){
-
+        if(is_array($text))
+        {
             $taskArr = [];
             foreach($text as $k => $v){
                 $task = 'task'.$k;
@@ -178,15 +176,13 @@ class AliGreen
                 );
                 array_push($taskArr, $$task);
             }
-            $request->setContent(json_encode(array("tasks" => $taskArr,
-                "scenes" => array("antispam"))));
+            $request->setContent(json_encode(array("tasks" => $taskArr, "scenes" => array("antispam"))));
 
         }else if(is_string($text)){
             $task1 = array('dataId' =>  md5(uniqid()),
                 'content' => $text
             );
-            $request->setContent(json_encode(array("tasks" => array($task1),
-                "scenes" => array("antispam"))));
+            $request->setContent(json_encode(array("tasks" => array($task1), "scenes" => array("antispam"))));
         }
 
         return $this->processResponse($request, $text, 'text');
@@ -207,8 +203,8 @@ class AliGreen
      * @param $img 支持字符串和数组
      * @return null
      */
-    public function checkImg($img){
-
+    public function checkImg($img)
+    {
         if(empty($img)){
             return null;
         }
@@ -217,8 +213,8 @@ class AliGreen
         $request->setMethod("POST");
         $request->setAcceptFormat("JSON");
 
-        if(is_array($img)){
-
+        if(is_array($img))
+        {
             $taskArr = array();
             foreach($img as $k => $v){
                 $task = 'task'.$k;
@@ -228,19 +224,28 @@ class AliGreen
                 );
                 array_push($taskArr, $$task);
             }
-            $request->setContent(json_encode(array("tasks" => $taskArr,
-                "scenes" => config('aliyun.scenes'))));
+            $request->setContent(json_encode(array("tasks" => $taskArr, "scenes" => config('aliyun.scenes'))));
 
         }else if(is_string($img)){
             $task1 = array('dataId' =>  md5(uniqid()),
                 'url' => $img,
                 'time' => round(microtime(true)*1000)
             );
-            $request->setContent(json_encode(array("tasks" => array($task1),
-                "scenes" => config('aliyun.scenes'))));
+            $request->setContent(json_encode(array("tasks" => array($task1), "scenes" => config('aliyun.scenes'))));
         }
 
         return $this->processResponse($request, $img, 'image');
     }
 
+    /**
+     * @param $code
+     * @param $msg
+     */
+    private function response($code, $msg)
+    {
+        return [
+            'code' => $code,
+            'msg' => $msg,
+        ];
+    }
 }

@@ -10,7 +10,7 @@
     
    2、发布config
    
-    php artisan vendor:publish --tag=config
+    php artisan vendor:publish --tag=aliyun
     
 ### 使用方法：
 

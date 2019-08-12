@@ -9,4 +9,10 @@ return [
 	"scenes" => ["ad", "porn", "terrorism", "qrcode"],
 	// 地区 上海
 	"region" => "cn-shanghai",
+
+    // 自定义 text 违规内容
+    "content" => [
+        "cnm",
+        "sb"
+    ]
 ];
