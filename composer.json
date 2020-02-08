@@ -9,7 +9,9 @@
             "email": "1527736751@qq.com"
         }
     ],
-    "require": {},
+    "require": {
+        "illuminate/support": "~5.0"
+    },
     "autoload": {
         "psr-4": {
             "James\\AliGreen\\": "src/"

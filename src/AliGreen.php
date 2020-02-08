@@ -1,6 +1,8 @@
 <?php
 
 namespace James\AliGreen;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use James\AliGreen\Green;
 include_once 'aliyun-php-sdk-core/Config.php';
 
@@ -76,10 +78,12 @@ class AliGreen
         }
     }
 
-
-
     /**
-     * @param $taskResult
+     * Date: 2020/2/8 18:33
+     * @param $taskResults
+     * @param $title
+     * @param $type
+     * @return mixed
      */
     private function processSceneResult($taskResults, $title, $type)
     {
@@ -93,8 +97,7 @@ class AliGreen
         // 处理自定文字
         if(!array_filter($arr) && config('aliyun.content') && $type == 'text')
         {
-            if(!is_array($title))
-                $title = [$title];
+            $title = Arr::wrap($title);
 
             foreach ($title as $v) {
                 $arr[] = $this->reviewText($v);
@@ -102,7 +105,6 @@ class AliGreen
         }
 
         return current(array_filter($arr));
-
     }
 
     /**
@@ -135,7 +137,7 @@ class AliGreen
      */
     private function reviewText($title)
     {
-        return in_array($title, config('aliyun.content')) ? [ 'rate' => 100, 'describe' => '违规'] : [];
+        return Str::contains($title, config('aliyun.content')) ? [ 'rate' => 100, 'describe' => '违规'] : [];
     }
 
     /**
