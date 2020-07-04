@@ -3,6 +3,8 @@
 namespace James\AliGreen;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Lumen\Application as LumenApplication;
+use Illuminate\Foundation\Application as LaravelApplication;
 
 class AliGreenServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,13 @@ class AliGreenServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([__DIR__ . '/config/aliyun.php' => config_path('aliyun.php') ], 'aliyun');
+        if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
+            $this->publishes([__DIR__ . '/config/aliyun.php' => config_path('aliyun.php')], 'aliyun');
+        } elseif ($this->app instanceof LumenApplication) {
+            $this->app->configure('aliyun');
+        }
+
+        $this->mergeConfigFrom(__DIR__ . '/config/aliyun.php', "aliyun");
     }
 
     /**

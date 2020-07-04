@@ -4,13 +4,23 @@
 
 阿里内容检测服务封装，包括垃圾文本、关键词文本检测以及对图片涉黄、暴恐、敏感检测
 ### 安装：
-   1、引入包
    
     composer require james.xue/ali-safe-api
     
-   2、发布config
+### laravel 应用
+发布 config
    
     php artisan vendor:publish --tag=aliyun
+   
+### lumen 应用
+1. 在 `bootstrap/app.php` 中添加：
+
+```php
+$app->register(\James\AliGreen\AliGreenServiceProvider::class);
+```
+
+2 如果你习惯使用 `config/aliyun.php` 来配置的话，将 `vendor/james.xue/ali-safe-api/src/config/aliyun.php` 拷贝到`项目根目录/config`目录下。
+
     
 ### 使用方法：
 
@@ -41,3 +51,6 @@
   
     $result = $ali->checkImg($imgArr);
  
+### 注意事项
+
+只有 version`1.3.2`以后才支持`lumen`
