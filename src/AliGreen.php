@@ -3,7 +3,8 @@
 namespace James\AliGreen;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use James\AliGreen\Green;
+use James\AliGreen\Green\TextScanRequest;
+use James\AliGreen\Green\ImageSyncScanRequest;
 include_once 'aliyun-php-sdk-core/Config.php';
 
 class AliGreen
@@ -162,7 +163,7 @@ class AliGreen
             return null;
         }
 
-        $request = new Green\TextScanRequest();
+        $request = new TextScanRequest();
         $request->setMethod("POST");
         $request->setAcceptFormat("JSON");
 
@@ -211,7 +212,7 @@ class AliGreen
             return null;
         }
 
-        $request = new Green\ImageSyncScanRequest();
+        $request = new ImageSyncScanRequest();
         $request->setMethod("POST");
         $request->setAcceptFormat("JSON");
 
