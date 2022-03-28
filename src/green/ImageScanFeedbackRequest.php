@@ -1,42 +1,35 @@
 <?php
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/**
+ * This file is part of PHP CS Fixer.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * (c) vinhson <15227736751@qq.com>
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 namespace James\AliGreen\Green;
 
-class ImageScanFeedbackRequest extends \RoaAcsRequest
+use RoaAcsRequest;
+
+class ImageScanFeedbackRequest extends RoaAcsRequest
 {
-	function  __construct()
-	{
-		parent::__construct("Green", "2017-01-12", "ImageScanFeedback");
-		$this->setUriPattern("/green/image/feedback");
-		$this->setMethod("POST");
-	}
+    public function __construct()
+    {
+        parent::__construct('Green', '2017-01-12', 'ImageScanFeedback');
+        $this->setUriPattern('/green/image/feedback');
+        $this->setMethod('POST');
+    }
 
-	private  $clientInfo;
+    private $clientInfo;
 
-	public function getClientInfo() {
-		return $this->clientInfo;
-	}
+    public function getClientInfo()
+    {
+        return $this->clientInfo;
+    }
 
-	public function setClientInfo($clientInfo) {
-		$this->clientInfo = $clientInfo;
-		$this->queryParameters["ClientInfo"]=$clientInfo;
-	}
-	
+    public function setClientInfo($clientInfo)
+    {
+        $this->clientInfo = $clientInfo;
+        $this->queryParameters['ClientInfo'] = $clientInfo;
+    }
 }

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of PHP CS Fixer.
+ *
+ * (c) vinhson <15227736751@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 namespace James\AliGreen;
 
 use Illuminate\Support\ServiceProvider;
@@ -21,7 +28,7 @@ class AliGreenServiceProvider extends ServiceProvider
             $this->app->configure('aliyun');
         }
 
-        $this->mergeConfigFrom(__DIR__ . '/config/aliyun.php', "aliyun");
+        $this->mergeConfigFrom(__DIR__ . '/config/aliyun.php', 'aliyun');
     }
 
     /**
@@ -35,5 +42,4 @@ class AliGreenServiceProvider extends ServiceProvider
             return new AliGreen();
         });
     }
-
 }

@@ -1,33 +1,42 @@
 <?php
-
+/**
+ * This file is part of PHP CS Fixer.
+ *
+ * (c) vinhson <15227736751@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 namespace James\AliGreen;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use James\AliGreen\Green\TextScanRequest;
-use James\AliGreen\Green\ImageSyncScanRequest;
+
+use DefaultProfile;
+use DefaultAcsClient;
+use Illuminate\Support\{Arr, Str};
+use James\AliGreen\Green\{ImageSyncScanRequest, TextScanRequest};
+
 include_once 'aliyun-php-sdk-core/Config.php';
 
 class AliGreen
 {
     private static $_instance;
 
-    private function __clone(){
-        trigger_error("clone is not allowed", E_USER_ERROR);
+    private function __clone()
+    {
+        trigger_error('clone is not allowed', E_USER_ERROR);
     }
 
     /**
      * Get the acs client
-     * @return \DefaultAcsClient
+     * @return DefaultAcsClient
      */
     public static function getClient()
     {
-        date_default_timezone_set("PRC");
+        date_default_timezone_set('PRC');
 
-        $iClientProfile = \DefaultProfile::getProfile(config('aliyun.region'), config('aliyun.accessKeyId'), config('aliyun.accessKeySecret'));
-        \DefaultProfile::addEndpoint(config('aliyun.region'), config('aliyun.region'), "Green", "green.".config('aliyun.region').".aliyuncs.com");
-        $client = new \DefaultAcsClient($iClientProfile);
+        $iClientProfile = DefaultProfile::getProfile(config('aliyun.region'), config('aliyun.accessKeyId'), config('aliyun.accessKeySecret'));
+        DefaultProfile::addEndpoint(config('aliyun.region'), config('aliyun.region'), 'Green', 'green.' . config('aliyun.region') . '.aliyuncs.com');
 
-        return $client;
+        return new DefaultAcsClient($iClientProfile);
     }
 
     /**
@@ -36,9 +45,9 @@ class AliGreen
      */
     public static function getInstance()
     {
-        if(empty( self::$_instance)){
+        if (empty(self::$_instance)) {
             $class = get_called_class();
-            self::$_instance  = new $class();
+            self::$_instance = new $class();
         }
 
         return self::$_instance;
@@ -59,24 +68,24 @@ class AliGreen
         $client = $this->getClient();
         $response = $client->getAcsResponse($request);
 
-        if(200 == $response->code){
-            if(!$taskResults = $response->data)
+        if ($response->code == 200) {
+            if (! $taskResults = $response->data) {
                 return $this->response(-200, '请重试！');
+            }
 
             $arr = $this->processSceneResult($taskResults, $title, $type);
 
-            if(!$arr){
-                return $this->response(200,[
+            if (! $arr) {
+                return $this->response(200, [
                     'rate' => 100,
                     'describe' => '正常'
                 ]);
-            }else{
-                return $this->response(-100, $arr);
             }
 
-        }else{
-            return $this->response(-200, '请重试！');
+            return $this->response(-100, $arr);
         }
+
+        return $this->response(-200, '请重试！');
     }
 
     /**
@@ -89,15 +98,14 @@ class AliGreen
     private function processSceneResult($taskResults, $title, $type)
     {
         $arr = [];
-        foreach ($taskResults as $value){
-            foreach ($value->results as $v){
+        foreach ($taskResults as $value) {
+            foreach ($value->results as $v) {
                 $arr[] = $this->review($v->suggestion, $v->label, $v->rate, $v->scene);
             }
         }
 
         // 处理自定文字
-        if(!array_filter($arr) && config('aliyun.content') && $type == 'text')
-        {
+        if (! array_filter($arr) && config('aliyun.content') && $type == 'text') {
             $title = Arr::wrap($title);
 
             foreach ($title as $v) {
@@ -119,7 +127,7 @@ class AliGreen
     private function review($suggestion, $label, $rate, $scene)
     {
         $arr = [];
-        if(in_array($suggestion, ['review', 'block'])){
+        if (in_array($suggestion, ['review', 'block'])) {
             $arr = [
                 'label' => $label,
                 'rate' => $rate,
@@ -127,6 +135,7 @@ class AliGreen
                 'describe' => $suggestion == 'review' ? '疑似' : '违规',
             ];
         }
+
         return $arr;
     }
 
@@ -138,7 +147,7 @@ class AliGreen
      */
     private function reviewText($title)
     {
-        return Str::contains($title, config('aliyun.content')) ? [ 'rate' => 100, 'describe' => '违规'] : [];
+        return Str::contains($title, config('aliyun.content')) ? ['rate' => 100, 'describe' => '违规'] : [];
     }
 
     /**
@@ -159,33 +168,31 @@ class AliGreen
      */
     public function checkText($text)
     {
-        if(empty($text)){
+        if (empty($text)) {
             return null;
         }
 
         $request = new TextScanRequest();
-        $request->setMethod("POST");
-        $request->setAcceptFormat("JSON");
+        $request->setMethod('POST');
+        $request->setAcceptFormat('JSON');
 
-        if(is_array($text))
-        {
+        if (is_array($text)) {
             $taskArr = [];
-            foreach($text as $k => $v){
-                $task = 'task'.$k;
-                $$task = array('dataId' =>  md5(uniqid($task)),
+            foreach ($text as $k => $v) {
+                $task = 'task' . $k;
+                $$task = ['dataId' => md5(uniqid($task)),
                     'content' => $v,
                     'category' => 'post',
-                    'time' => round(microtime(true)*1000)
-                );
+                    'time' => round(microtime(true) * 1000)
+                ];
                 array_push($taskArr, $$task);
             }
-            $request->setContent(json_encode(array("tasks" => $taskArr, "scenes" => array("antispam"))));
-
-        }else if(is_string($text)){
-            $task1 = array('dataId' =>  md5(uniqid()),
+            $request->setContent(json_encode(['tasks' => $taskArr, 'scenes' => ['antispam']]));
+        } elseif (is_string($text)) {
+            $task1 = ['dataId' => md5(uniqid()),
                 'content' => $text
-            );
-            $request->setContent(json_encode(array("tasks" => array($task1), "scenes" => array("antispam"))));
+            ];
+            $request->setContent(json_encode(['tasks' => [$task1], 'scenes' => ['antispam']]));
         }
 
         return $this->processResponse($request, $text, 'text');
@@ -208,33 +215,31 @@ class AliGreen
      */
     public function checkImg($img)
     {
-        if(empty($img)){
+        if (empty($img)) {
             return null;
         }
 
         $request = new ImageSyncScanRequest();
-        $request->setMethod("POST");
-        $request->setAcceptFormat("JSON");
+        $request->setMethod('POST');
+        $request->setAcceptFormat('JSON');
 
-        if(is_array($img))
-        {
-            $taskArr = array();
-            foreach($img as $k => $v){
-                $task = 'task'.$k;
-                $$task = array('dataId' =>  md5(uniqid($task)),
+        if (is_array($img)) {
+            $taskArr = [];
+            foreach ($img as $k => $v) {
+                $task = 'task' . $k;
+                $$task = ['dataId' => md5(uniqid($task)),
                     'url' => $v,
-                    'time' => round(microtime(true)*1000)
-                );
+                    'time' => round(microtime(true) * 1000)
+                ];
                 array_push($taskArr, $$task);
             }
-            $request->setContent(json_encode(array("tasks" => $taskArr, "scenes" => config('aliyun.scenes'))));
-
-        }else if(is_string($img)){
-            $task1 = array('dataId' =>  md5(uniqid()),
+            $request->setContent(json_encode(['tasks' => $taskArr, 'scenes' => config('aliyun.scenes')]));
+        } elseif (is_string($img)) {
+            $task1 = ['dataId' => md5(uniqid()),
                 'url' => $img,
-                'time' => round(microtime(true)*1000)
-            );
-            $request->setContent(json_encode(array("tasks" => array($task1), "scenes" => config('aliyun.scenes'))));
+                'time' => round(microtime(true) * 1000)
+            ];
+            $request->setContent(json_encode(['tasks' => [$task1], 'scenes' => config('aliyun.scenes')]));
         }
 
         return $this->processResponse($request, $img, 'image');
