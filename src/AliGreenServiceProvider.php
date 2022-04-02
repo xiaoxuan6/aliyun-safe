@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of PHP CS Fixer.
+ * This file is part of aliyun safe package.
  *
  * (c) vinhson <15227736751@qq.com>
  *

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of PHP CS Fixer.
+ * This file is part of aliyun safe package.
  *
  * (c) vinhson <15227736751@qq.com>
  *
@@ -14,7 +14,7 @@ use DefaultAcsClient;
 use Illuminate\Support\{Arr, Str};
 use James\AliGreen\Green\{ImageSyncScanRequest, TextScanRequest};
 
-include_once 'aliyun-php-sdk-core/Config.php';
+include_once 'Core/Config.php';
 
 class AliGreen
 {
