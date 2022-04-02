@@ -11,12 +11,12 @@ spl_autoload_register('Autoloader::autoload');
 class Autoloader
 {
     private static $autoloadPathArray = [
-        'aliyun-php-sdk-core',
-        'aliyun-php-sdk-core/Auth',
-        'aliyun-php-sdk-core/Http',
-        'aliyun-php-sdk-core/Profile',
-        'aliyun-php-sdk-core/Regions',
-        'aliyun-php-sdk-core/Exception'
+        'Core',
+        'Core/Auth',
+        'Core/Http',
+        'Core/Profile',
+        'Core/Regions',
+        'Core/Exception'
     ];
 
     public static function autoload($className)
