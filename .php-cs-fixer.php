@@ -59,7 +59,6 @@ return (new PhpCsFixer\Config())
         'return_assignment' => true,
         'blank_line_after_namespace' => true,
         'no_leading_namespace_whitespace' => true,
-        'single_blank_line_before_namespace' => true,
         'fully_qualified_strict_types' => true,
         'global_namespace_import' => [
             'import_classes' => true,
