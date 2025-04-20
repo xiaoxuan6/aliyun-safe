@@ -2,6 +2,10 @@
 
 All notable changes to `aliyun-safe` will be documented in this file.
 
+## v2.1.3 - 2025-04-20
+
+**Full Changelog**: https://github.com/xiaoxuan6/aliyun-safe/compare/2.1.2...v2.1.3
+
 ## 2.1.2 - 2024-10-29
 
 ### What's Changed
